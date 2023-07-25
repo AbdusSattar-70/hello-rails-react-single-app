@@ -3,24 +3,27 @@ import { fetchGreetings } from "../store/greetingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function Greetings() {
-	const dispatch = useDispatch();
-	const greetingsData = useSelector((state) => state.greetings.greetings);
-	const singleGreeting = greetingsData[Math.floor(Math.random() * greetingsData.length)];
+  const dispatch = useDispatch();
+  const greetingsData = useSelector((state) => state.greetings.greetings);
 
-	useEffect(() => {
-		dispatch(fetchGreetings());
-	}, [dispatch]);
+  useEffect(() => {
+    // Fetch greetings initially
+    dispatch(fetchGreetings());
 
-	return (
-		<div>
-			<button
-				onClick={() => dispatch(fetchGreetings())}
-				>
-				Generate Message
-			</button>
-			{singleGreeting && <h1>{singleGreeting.message}</h1>}
-		</div>
-	);
+    // Fetch greetings every 5 seconds
+    const interval = setInterval(() => {
+      dispatch(fetchGreetings());
+    }, 5000);
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
+  return (
+    <div className="centre">
+      {greetingsData && <h1>{greetingsData.message}</h1>}
+    </div>
+  );
 }
 
 export default Greetings;
